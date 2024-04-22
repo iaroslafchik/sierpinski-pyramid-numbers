@@ -7,7 +7,11 @@ using System.Linq;
 using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
 using System.Windows.Forms;
+using sierpinski_pyramid_numbers.Properties;
+
+
 
 namespace sierpinski_pyramid_numbers
 {
@@ -31,32 +35,13 @@ namespace sierpinski_pyramid_numbers
         public Form1()
         {
             InitializeComponent();
-
+        }
+        private void Form1_Load(object sender, EventArgs e)
+        {
             iteration = 0;
 
             toolStripTextBox1.Text = iteration.ToString();
             Calculate(this, EventArgs.Empty);
-        }
-
-        BigInteger Pow(BigInteger value, BigInteger power)
-        {
-            if (power == 0)
-                return 1;
-
-            BigInteger answer = 1;
-
-            for (; power > 0;)
-            {
-                if (power % 2 != 0)
-                {
-                    answer *= value;
-                    power = power - 1;
-                }
-                power /= 2;
-                value *= value;
-            }
-            
-            return answer;
         }
 
         private void Calculate(object sender, EventArgs e)
@@ -75,9 +60,9 @@ namespace sierpinski_pyramid_numbers
 
             startTime = DateTime.Now;
 
-            for (int i = 0; i < iteration; i++)
+            for (int i = 1; i <= iteration; i++)
             {
-                vertices = (Pow(2, i + 1 + 4) + 23 * Pow(5, i + 1) + 21) / 12;
+                vertices = vertices * 5 - ((1 << (i + 1)) + 7);
                 verticesSum += vertices;
 
                 planes = planes * 5 - 3;
@@ -86,11 +71,13 @@ namespace sierpinski_pyramid_numbers
                 pyramids = pyramids * 5;
                 pyramidsSum += pyramids;
 
-                edges = edges * 5 - Pow(2, i + 1 + 1);
+                edges = edges * 5 - (1 << (i + 1));
                 edgesSum += edges;
             }
 
             endTime = DateTime.Now;
+
+            toolStripLabel2.Text = (endTime - startTime).ToString();
 
             dataGridView1.Rows.Clear();
 
@@ -101,8 +88,7 @@ namespace sierpinski_pyramid_numbers
             dataGridView1.Rows.Add("Сторон", planes, planesSum);
             dataGridView1.Rows.Add("Пирамид", pyramids, pyramidsSum);
             dataGridView1.Rows.Add("Ребер", edges, edgesSum);
-
-            toolStripLabel2.Text = (endTime - startTime).ToString();
         }
+
     }
 }
